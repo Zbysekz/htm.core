@@ -164,6 +164,8 @@ set(regions_files
     htm/regions/FileOutputRegion.hpp
     htm/regions/FileInputRegion.cpp
     htm/regions/FileInputRegion.hpp   
+    htm/regions/DatabaseOutRegion.cpp
+    htm/regions/DatabaseOutRegion.hpp
 )
 
 set(types_files
@@ -187,6 +189,8 @@ set(utils_files
     htm/utils/SdrMetrics.hpp
     htm/utils/Topology.cpp
     htm/utils/Topology.hpp
+    htm/utils/sqlite3.c
+    htm/utils/sqlite3.h
 )
 
 set(examples_files
@@ -352,7 +356,7 @@ target_include_directories(${src_executable_hello} PRIVATE
 ###          VERBATIM)
 
 #########################################################
-## Dynamicly linked version of hello
+## Dynamically linked version of hello
 if(MSVC)
 else()
   set(src_dyn_executable_hello dynamic_hello)

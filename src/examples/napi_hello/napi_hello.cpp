@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     // Setup data flows between regions
     net.link("encoder",   "sp_global", "", "", "encoded", "bottomUpIn");
     net.link("sp_global", "tm",        "", "", "bottomUpOut", "bottomUpIn");
-    net.link("tm", "output", "UniformLink", "", "bottomUpOut", "dataIn");
+    net.link("tm", "output", "", "", "anomaly", "dataIn");
 
     net.initialize();
 
