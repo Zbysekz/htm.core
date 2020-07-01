@@ -32,7 +32,7 @@
 #include <htm/regions/DatabaseOutRegion.hpp>
 #include <htm/utils/Log.hpp>
 
-#include <htm/utils/sqlite3.h>
+#include <sqlite3.h>
 
 namespace htm {
 

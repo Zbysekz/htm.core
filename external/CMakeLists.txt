@@ -118,6 +118,10 @@ include(mnist_data.cmake)
 include(cereal.cmake)
 
 #################
+# sqlite3
+include(sqlite3.cmake)
+
+#################
 # digestpp hash digest repo
 include(digestpp.cmake)
 

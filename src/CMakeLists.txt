@@ -189,8 +189,6 @@ set(utils_files
     htm/utils/SdrMetrics.hpp
     htm/utils/Topology.cpp
     htm/utils/Topology.hpp
-    htm/utils/sqlite3.c
-    htm/utils/sqlite3.h
 )
 
 set(examples_files

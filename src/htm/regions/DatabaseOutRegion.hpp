@@ -33,7 +33,7 @@
 #include <htm/ntypes/Value.hpp>
 
 extern "C" {
-#include <htm/utils/sqlite3.h>
+#include <sqlite3.h>
 }
 
 namespace htm {
