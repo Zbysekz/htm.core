@@ -24,7 +24,8 @@ import copy
 import json
 
 import numpy as np
-from htm.bindings.engine_internal import Network
+from pandaBaker.pandaNetwork import Network
+#from htm.bindings.engine_internal import Network
 
 from htm.advanced.frameworks.location.path_integration_union_narrowing import computeRatModuleParametersFromReadoutResolution
 from htm.advanced.frameworks.location.path_integration_union_narrowing import computeRatModuleParametersFromCellCount
