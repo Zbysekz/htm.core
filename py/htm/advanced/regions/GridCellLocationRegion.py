@@ -292,7 +292,8 @@ class GridCellLocationRegion(PyRegion):
                  learningMode=False,
                  seed=42,
                  dualPhase=True,
-                 dimensions=2):
+                 dimensions=2,
+                 **kwargs):
 
         scale = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
         orientation =[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
@@ -335,7 +336,7 @@ class GridCellLocationRegion(PyRegion):
 
         self._projection = None
 
-        PyRegion.__init__(self)
+        PyRegion.__init__(self, **kwargs)
 
     def initialize(self):
         """ Initialize grid cell modules """
