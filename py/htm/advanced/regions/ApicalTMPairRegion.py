@@ -311,15 +311,6 @@ class ApicalTMPairRegion(PyRegion):
                     "count": 1,
                     "accessMode":"ReadWrite"
                 },
-                "implementation": {
-                    "description": "Apical implementation",
-                    "accessMode": "Create",
-                    "dataType": "Byte",
-                    "count": 0,
-                    "constraints": ("enum: ApicalTiebreak, ApicalTiebreakCPP, ApicalDependent"),
-                    "defaultValue": "ApicalTiebreakCPP",
-                    "accessMode":"ReadWrite"
-                },
             },
         }
 
@@ -351,7 +342,6 @@ class ApicalTMPairRegion(PyRegion):
              seed=42,
 
              # Region params
-             implementation="ApicalTiebreak",
              learn=True,
              **kwargs):
 
@@ -378,7 +368,7 @@ class ApicalTMPairRegion(PyRegion):
         self.seed = seed
 
         # Region params
-        self.implementation = implementation
+        self.implementation = "ApicalTiebreak"
         self.learn = learn
 
         PyRegion.__init__(self, **kwargs)

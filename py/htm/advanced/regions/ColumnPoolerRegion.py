@@ -313,14 +313,7 @@ class ColumnPoolerRegion(PyRegion):
                     dataType="UInt32",
                     count=1,
                     defaultValue="42"),
-                defaultOutputType=dict(
-                    description="Controls what type of cell output is placed into"
-                                " the default output 'feedForwardOutput'",
-                    accessMode="Create",
-                    dataType="Byte",
-                    count=0,
-                    constraints="enum: active,predicted,predictedActiveCells",
-                    defaultValue="active"),
+
             ),
             commands=dict(
                 reset=dict(description="Explicitly reset TM states now."),
@@ -336,8 +329,8 @@ class ColumnPoolerRegion(PyRegion):
          numOtherCorticalColumns=0,
          sdrSize=40,
          onlineLearning = False,
-         maxSdrSize = None,
-         minSdrSize = None,
+         maxSdrSize = 0,
+         minSdrSize = 0,
 
          # Proximal
          synPermProximalInc=0.1,

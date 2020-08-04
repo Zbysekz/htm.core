@@ -200,28 +200,210 @@ class NetworkAPI_SineWave_Test(unittest.TestCase):
   "size": 1000,
   "sparsity": 0.200000,
 }"""
+
+    pars = dict(
+      moduleCount=dict(
+        description="Number of grid cell modules",
+        dataType="UInt32",
+        accessMode="Create",
+        count=1
+      ),
+      cellsPerAxis=dict(
+        description="Determines the number of cells. Determines how space is "
+                    "divided between the cells",
+        dataType="UInt32",
+        accessMode="Create",
+        count=1
+      ),
+      scale=dict(
+        description="Determines the amount of world space covered by all of "
+                    "the cells combined. In grid cell terminology, this is "
+                    "equivalent to the 'scale' of a module. One scale value "
+                    "for each grid cell module. Array size must match "
+                    "'moduleCount' parameter",
+        dataType="Real32",
+        accessMode="Create",
+        count=0,
+      ),
+      orientation=dict(
+        description="The rotation of this map, measured in radians. One "
+                    "orientation value for each grid cell module. Array size "
+                    "must match 'moduleCount' parameter",
+        dataType="Real32",
+        accessMode="Create",
+        count=0,
+      ),
+      anchorInputSize=dict(
+        description="The number of input bits in the anchor input",
+        dataType="UInt32",
+        accessMode="Create",
+        count=1,
+      ),
+      activeFiringRate=dict(
+        description="Between 0.0 and 1.0. A cell is considered active if its "
+                    "firing rate is at least this value",
+        dataType="Real32",
+        accessMode="Create",
+        count=1,
+      ),
+      bumpSigma=dict(
+        description="Specifies the diameter of a gaussian bump, in units of "
+                    "'rhombus edges'. A single edge of the rhombus has length "
+                    "1, and this bumpSigma would typically be less than 1. We "
+                    "often use 0.18172 as an estimate for the sigma of a rat "
+                    "entorhinal bump",
+        dataType="Real32",
+        accessMode="Create",
+        count=1,
+        defaultValue="0.18172",
+      ),
+      activationThreshold=dict(
+        description="If the number of active connected synapses on a "
+                    "segment is at least this threshold, the segment "
+                    "is said to be active",
+        accessMode="Create",
+        dataType="UInt32",
+        count=1,
+        constraints="",
+        defaultValue="10"
+      ),
+      initialPermanence=dict(
+        description="Initial permanence of a new synapse",
+        accessMode="Create",
+        dataType="Real32",
+        count=1,
+        constraints="",
+        defaultValue="0.21"
+      ),
+      connectedPermanence=dict(
+        description="If the permanence value for a synapse is greater "
+                    "than this value, it is said to be connected",
+        accessMode="Create",
+        dataType="Real32",
+        count=1,
+        constraints="",
+        defaultValue="0.50"
+      ),
+      learningThreshold=dict(
+        description="Minimum overlap required for a segment to learned",
+        accessMode="Create",
+        dataType="UInt32",
+        count=1,
+        defaultValue="10"
+      ),
+      sampleSize=dict(
+        description="The desired number of active synapses for an "
+                    "active cell",
+        accessMode="Create",
+        dataType="UInt32",
+        count=1,
+        defaultValue="20"
+      ),
+      permanenceIncrement=dict(
+        description="Amount by which permanences of synapses are "
+                    "incremented during learning",
+        accessMode="Create",
+        dataType="Real32",
+        count=1,
+        defaultValue="0.1"
+      ),
+      permanenceDecrement=dict(
+        description="Amount by which permanences of synapses are "
+                    "decremented during learning",
+        accessMode="Create",
+        dataType="Real32",
+        count=1,
+        defaultValue="0.0"
+      ),
+      maxSynapsesPerSegment=dict(
+        description="The maximum number of synapses per segment",
+        accessMode="Create",
+        dataType="UInt32",
+        count=1,
+        defaultValue="-1"
+      ),
+      learningMode=dict(
+        description="A boolean flag that indicates whether or not we should "
+                    "learn by associating the location with the sensory "
+                    "input",
+        dataType="Bool",
+        accessMode="ReadWrite",
+        count=1,
+        defaultValue="False"
+      ),
+      dualPhase=dict(
+        description="A boolean flag that indicates whether or not we should "
+                    "process movement and sensation using two phases of the "
+                    "same network. When this flag is enabled, the compute "
+                    "method will alternate between movement and sensation on "
+                    "each phase. When this flag is disabled both movement and "
+                    "sensations will be processed on a single phase.",
+        dataType="Bool",
+        accessMode="ReadWrite",
+        count=1,
+        defaultValue="True"
+      ),
+      dimensions=dict(
+        description="The number of dimensions represented in the displacement",
+        accessMode="Create",
+        dataType="UInt32",
+        count=1,
+        defaultValue="2"
+      ),
+      seed=dict(
+        description="Seed for the random number generator",
+        accessMode="Create",
+        dataType="UInt32",
+        count=1,
+        defaultValue="42"
+      )
+    )
+    import json
     registerAllAdvancedRegions()
     net = Network()
-    encoder = net.addRegion("py.ColumnPoolerRegion", "py.ColumnPoolerRegion",
-                            """{ 
-	"activationThresholdDistal": 20,
-	"cellCount": 4096,
-	"connectedPermanenceDistal": 0.5,
-	"connectedPermanenceProximal": 0.5,
-	"initialDistalPermanence": 0.51,
-	"initialProximalPermanence": 0.6,
-	"minThresholdProximal": 5,
-	"sampleSizeDistal": 30,
-	"sampleSizeProximal": 10,
-	"sdrSize": 40,
-	"synPermDistalDec": 0.001,
-	"synPermDistalInc": 0.1,
-	"synPermProximalDec": 0.001,
-	"synPermProximalInc": 0.1
-}""")
+    encoder = net.addRegion("asd", "py.GridCellLocationRegion",#"py.ColumnPoolerRegion"
+                            """
+                            {"moduleCount": 10,
+                            "dimensions": 3,
+                            "activationThreshold": 8,
+                            "initialPermanence": 1.0,
+                            "connectedPermanence": 0.5,
+                            "learningThreshold": 8,
+                            "sampleSize": 10,
+                            "permanenceIncrement": 0.1,
+                            "permanenceDecrement": 0.0,
+                            "cellsPerAxis":6,
+                            
+                            "anchorInputSize":20,
+                            "activeFiringRate":0.0
+                            }
+                            """
+
+                            # "scale":[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                            #         "orientation": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+
+                            #                             """{
+# 	"activationThresholdDistal": 20,
+# 	"cellCount": 4096,
+# 	"connectedPermanenceDistal": 0.5,
+# 	"connectedPermanenceProximal": 0.5,
+# 	"initialDistalPermanence": 0.51,
+# 	"initialProximalPermanence": 0.6,
+# 	"minThresholdProximal": 5,
+# 	"sampleSizeDistal": 30,
+# 	"sampleSizeProximal": 10,
+# 	"sdrSize": 40,
+# 	"synPermDistalDec": 0.001,
+# 	"synPermDistalInc": 0.1,
+# 	"synPermProximalDec": 0.001,
+# 	"synPermProximalInc": 0.1
+# }"""
+)
 
     #encoder = net.addRegion("encoder", "RDSEEncoderRegion", "{size: 1000, sparsity: 0.2, radius: 0.03, seed: 2019, noise: 0.01}")
-    json = encoder.getParameters();
+    json = encoder.getParameters()
+    print(json)
+    return
     self.assertEqual(json, expected)
     json = encoder.getParameterJSON("activeBits", False)
     self.assertEqual(json, "200")

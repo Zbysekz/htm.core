@@ -141,24 +141,6 @@ class GridCellLocationRegion(PyRegion):
                     accessMode="Create",
                     count=1
                 ),
-                scale=dict(
-                    description="Determines the amount of world space covered by all of "
-                                "the cells combined. In grid cell terminology, this is "
-                                "equivalent to the 'scale' of a module. One scale value "
-                                "for each grid cell module. Array size must match "
-                                "'moduleCount' parameter",
-                    dataType="Real32",
-                    accessMode="Create",
-                    count=0,
-                ),
-                orientation=dict(
-                    description="The rotation of this map, measured in radians. One "
-                                "orientation value for each grid cell module. Array size "
-                                "must match 'moduleCount' parameter",
-                    dataType="Real32",
-                    accessMode="Create",
-                    count=0,
-                ),
                 anchorInputSize=dict(
                     description="The number of input bits in the anchor input",
                     dataType="UInt32",
@@ -244,18 +226,9 @@ class GridCellLocationRegion(PyRegion):
                 maxSynapsesPerSegment=dict(
                     description="The maximum number of synapses per segment",
                     accessMode="Create",
-                    dataType="UInt32",
+                    dataType="Int32",
                     count=1,
                     defaultValue="-1"
-                ),
-                bumpOverlapMethod=dict(
-                    description="Specifies the firing rate of a cell when it's part of "
-                                "two bumps. ('probabilistic' or 'sum')",
-                    dataType="Byte",
-                    accessMode="Create",
-                    constraints=("enum: probabilistic, sum"),
-                    defaultValue="probabilistic",
-                    count=0,
                 ),
                 learningMode=dict(
                     description="A boolean flag that indicates whether or not we should "
@@ -303,8 +276,7 @@ class GridCellLocationRegion(PyRegion):
     def __init__(self,
                  moduleCount,
                  cellsPerAxis,
-                 scale,
-                 orientation,
+
                  anchorInputSize,
                  activeFiringRate,
                  bumpSigma,
@@ -317,12 +289,14 @@ class GridCellLocationRegion(PyRegion):
                  permanenceDecrement=0.0,
                  maxSynapsesPerSegment=-1,
                  maxSegmentsPerCell=255,
-                 bumpOverlapMethod="probabilistic",
                  learningMode=False,
                  seed=42,
                  dualPhase=True,
-                 dimensions=2,
-                 **kwargs):
+                 dimensions=2):
+
+        scale = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        orientation =[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
         if moduleCount <= 0 or cellsPerAxis <= 0:
             raise TypeError("Parameters moduleCount and cellsPerAxis must be > 0")
         if moduleCount != len(scale) or moduleCount != len(orientation):
@@ -347,7 +321,7 @@ class GridCellLocationRegion(PyRegion):
         self.permanenceDecrement = permanenceDecrement
         self.maxSynapsesPerSegment = maxSynapsesPerSegment
         self.maxSegmentsPerCell = maxSegmentsPerCell
-        self.bumpOverlapMethod = bumpOverlapMethod
+        self.bumpOverlapMethod = "probabilistic"
         self.learningMode = learningMode
         self.dualPhase = dualPhase
         self.dimensions = dimensions
@@ -361,7 +335,7 @@ class GridCellLocationRegion(PyRegion):
 
         self._projection = None
 
-        PyRegion.__init__(self, **kwargs)
+        PyRegion.__init__(self)
 
     def initialize(self):
         """ Initialize grid cell modules """
