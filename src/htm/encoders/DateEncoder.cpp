@@ -380,7 +380,7 @@ bool DateEncoder::operator==(const DateEncoder &other) const {
 
 
 struct tm* DateEncoder::gmtime(const time_t* timer) {
-	return std::gmtime(timer - 3600L);
+	return std::gmtime(timer/* - 3600L*/);
 }
 
 
