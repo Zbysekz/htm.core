@@ -22,7 +22,7 @@
  */
 
 #include <memory> // make_shared()
-#include <time.h> // localtime(), struct tm
+#include <time.h> // mktime(), gmtime(), struct tm
 #include <iostream> // cerr
 
 #include <htm/encoders/DateEncoder.hpp>
@@ -205,14 +205,14 @@ void DateEncoder::encode(std::time_t input, SDR &output) {
     // If no time is given (is 0), use the current time.
     input = time(0);
   }
-  struct std::tm timeinfo = *std::localtime(&input);
+	struct std::tm timeinfo = *gmtime(&input);
   encode(timeinfo, output);
 }
 
  // from python datetime
 void DateEncoder::encode(std::chrono::system_clock::time_point time_point, SDR &output) { 
   std::time_t input = std::chrono::system_clock::to_time_t(time_point);
-  struct std::tm timeinfo = *std::localtime(&input);
+  struct std::tm timeinfo = *gmtime(&input);
   encode(timeinfo, output);
 }
 
@@ -286,7 +286,7 @@ void DateEncoder::encode(struct std::tm timeinfo, SDR &output) {
     // holidays is a list of holidays that occur on a fixed date every year
     Real64 val = 0.0;
     double SECONDS_PER_DAY = 86400.0;
-    time_t input = std::mktime(&timeinfo);
+    time_t input = mktime(&timeinfo);
     for (auto h : args_.holiday_dates) {
       std::time_t hdate;
       if (h.size() == 3) {
@@ -379,7 +379,22 @@ bool DateEncoder::operator==(const DateEncoder &other) const {
 }
 
 
+struct tm* DateEncoder::gmtime(const time_t* timer) {
+	return std::gmtime(timer - 3600L);
+}
+
+
+time_t DateEncoder::mktime(struct tm *t) {
+	//time_t diff = DateEncoder::getUTCUnixTimestampZero();//gets number of seconds since 1.1.1970 0:00:00
+
+  time_t stamp = std::mktime(t);
+
+  return stamp;// - diff;//get rid of timezone
+}
+
 time_t DateEncoder::mktime(int year, int mon, int day, int hr, int min, int sec) { 
+	//time_t diff = DateEncoder::getUTCUnixTimestampZero();//gets number of seconds since 1.1.1970 0:00:00
+
   struct tm tm; 
   tm.tm_year = year - 1900;
   tm.tm_mon = mon - 1;
@@ -387,9 +402,33 @@ time_t DateEncoder::mktime(int year, int mon, int day, int hr, int min, int sec)
   tm.tm_hour = hr;
   tm.tm_min = min;
   tm.tm_sec = sec;
-  tm.tm_isdst = -1;
-  time_t t = std::mktime(&tm);
-  return t;
+  tm.tm_isdst = 0;//no daylight
+  time_t t = std::mktime(&tm);//this returns num of seconds from 1.1.1970 0:00:00 within current timezone
+
+  return t ;//- diff;//get rid of timezone
+}
+
+//Get number of seconds from 1.1.1970 0:00:00 in current timezone
+//this function returns 3600 for UTC+1 timezone, 0 for UTC+2, 7200 for UTC-1 etc...
+time_t DateEncoder::getUTCUnixTimestampZero(){
+	struct tm tm;
+
+	const int year = 1970;
+	const int mon = 1;
+	const int day = 1;
+	const int hr = 0;
+	const int min = 0;
+	const int sec = 0;
+
+	tm.tm_year = year - 1900;
+	tm.tm_mon = mon - 1;
+	tm.tm_mday = day;
+	tm.tm_hour = hr;
+	tm.tm_min = min;
+	tm.tm_sec = sec;
+	tm.tm_isdst = 0;//no daylight
+	time_t t = std::mktime(&tm)-3600L;
+	return t;
 }
 
 

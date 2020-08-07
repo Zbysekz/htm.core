@@ -215,9 +215,12 @@ public:
   inline bool operator!=(const DateEncoder &other) const { return !operator==(other); }
 
   // a convenience method to generate unix EPOCH time values.
+  static struct tm* gmtime(const time_t* timer);
+  static time_t mktime(struct tm *t);
   static time_t mktime(int year, int mon, int day, int hr=0, int min=0, int sec=0);
 
 private:
+  static time_t getUTCUnixTimestampZero();
   DateEncoderParameters args_;
 
   // fields populated by initialize()

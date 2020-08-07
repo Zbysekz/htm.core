@@ -289,4 +289,11 @@ TEST(DateEncoderTest, Serialization) {
   doDateValueCases(enc2, cases);
 }
 
+TEST(DateEncoderTest, testTimezoneIndependency) {
+	// should always be zero, since this function has internal offset to get rid of timezone
+	EXPECT_EQ(DateEncoder::mktime(1970,1,1,0,0,0),0+3600);
+
+	EXPECT_EQ(DateEncoder::mktime(1970,1,1,1,0,0),3600+3600);// one hour forward
+}
+
 } // namespace testing
