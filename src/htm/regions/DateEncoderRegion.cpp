@@ -33,6 +33,7 @@
 
 #include <memory>
 #include <stdlib.h>
+#include <fstream>
 
 namespace htm {
 
@@ -146,7 +147,30 @@ Dimensions DateEncoderRegion::askImplForOutputDimensions(const std::string &name
 void DateEncoderRegion::compute() {
   if (hasInput("values")) {
     Array &a = getInput("values")->getData();
-    sensedTime_ = (time_t)((Int64 *)(a.getBuffer()))[0];
+    sensedTime_ = (time_t)((Int32 *)(a.getBuffer()))[0];
+
+    ////////////
+
+    std::ofstream myfile;
+
+    myfile.open ("/home/zz/HTMlog.txt", std::ios::app);
+
+    myfile << "Writing this to a file.\n";
+
+    //for(SDR_sparse_t::size_type i = 0; i != sparse.size(); i++) {
+
+    myfile << sensedTime_;
+    myfile << a;
+
+    myfile << "\n";
+
+
+
+    myfile << "-------------------------------------\n";
+
+    myfile.close();
+
+    ///////////////////
   }
   SDR &output = getOutput("encoded")->getData().getSDR();
   encoder_->encode(sensedTime_, output);

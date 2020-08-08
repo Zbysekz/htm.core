@@ -51,7 +51,7 @@
 #include "RegionTestUtilities.hpp"
 
 #define VERBOSE if(verbose)std::cerr << "[          ] "
-static bool verbose = false;  // turn this on to print extra stuff for debugging the test.
+static bool verbose = true;  // turn this on to print extra stuff for debugging the test.
 
 const UInt EXPECTED_SPEC_COUNT =  15u;  // The number of parameters expected in the DateEncoderRegion Spec
 
@@ -145,11 +145,11 @@ TEST(DateEncoderRegionTest, testSpecAndParameters)
     // this test will hook up the FileInputRegion to our DateEncoderRegion and then
     // connect that to an SPRegion and then on to a FileOutputRegion to capture the results.
     //
-    std::string test_input_file = "TestOutputDir/DateEncoderRegionTestInput.csv";
+    std::string test_input_file = "/media/D/Data/HTM/TestOutputDir/DateEncoderRegionTestInput.csv";
 
 
     // make a place to put test data.
-    if (!Directory::exists("TestOutputDir")) Directory::create("TestOutputDir", false, true); 
+    if (!Directory::exists("/media/D/Data/HTM/TestOutputDir")) Directory::create("/media/D/Data/HTM/TestOutputDir", false, true);
     if (Path::exists(test_input_file)) Path::remove(test_input_file);
 
     // Create a csv data file to use as input.
@@ -160,6 +160,8 @@ TEST(DateEncoderRegionTest, testSpecAndParameters)
 
     VERBOSE << "Setup Network; add 3 regions and 2 links." << std::endl;
 	  Network net;
+
+	  net.setLogLevel(LogLevel::LogLevel_Verbose);
 
     std::string params = "{timeOfDay_width: 5, holiday_width: 2, holiday_dates: \"[[1,1]]\", verbose: " +
                                std::string((verbose) ? "true" : "false") + "}";
@@ -225,7 +227,7 @@ TEST(DateEncoderRegionTest, testSpecAndParameters)
 
 
     // cleanup
-    Directory::removeTree("TestOutputDir", true);
+    //Directory::removeTree("TestOutputDir", true);
   }
 
 

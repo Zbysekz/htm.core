@@ -230,6 +230,8 @@ void DateEncoder::encode(struct std::tm timeinfo, SDR &output) {
   SDR holiday_output;
   SDR timeOfDay_output;
   
+  VERBOSE << std::mktime(&timeinfo);
+
    VERBOSE << "DateEncoder for " 
            <<  std::string(asctime(&timeinfo)).substr(0, 24) 
            << ((timeinfo.tm_isdst)?" dst":"") 
@@ -380,7 +382,8 @@ bool DateEncoder::operator==(const DateEncoder &other) const {
 
 
 struct tm* DateEncoder::gmtime(const time_t* timer) {
-	return std::gmtime(timer/* - 3600L*/);
+	//return std::gmtime(timer/* - 3600L*/);
+	return std::localtime(timer);
 }
 
 
@@ -402,7 +405,7 @@ time_t DateEncoder::mktime(int year, int mon, int day, int hr, int min, int sec)
   tm.tm_hour = hr;
   tm.tm_min = min;
   tm.tm_sec = sec;
-  tm.tm_isdst = 0;//no daylight
+  tm.tm_isdst = -1;//no daylight
   time_t t = std::mktime(&tm);//this returns num of seconds from 1.1.1970 0:00:00 within current timezone
 
   return t ;//- diff;//get rid of timezone

@@ -32,7 +32,7 @@ namespace testing {
 using namespace htm;
 
 #define VERBOSE if (verbose) std::cerr << "[          ] "
-static bool verbose = false; // turn this on to print extra stuff for debugging.
+static bool verbose = true; // turn this on to print extra stuff for debugging.
 
 struct DateValueCase {
   std::vector<UInt> time;           // year,mon,day,hr,min,sec
@@ -292,8 +292,9 @@ TEST(DateEncoderTest, Serialization) {
 TEST(DateEncoderTest, testTimezoneIndependency) {
 	// should always be zero, since this function has internal offset to get rid of timezone
 	EXPECT_EQ(DateEncoder::mktime(1970,1,1,0,0,0),0+3600);
+	//EXPECT_EQ(std::mktime(1970,1,1,0,0,0), 0);
 
-	EXPECT_EQ(DateEncoder::mktime(1970,1,1,1,0,0),3600+3600);// one hour forward
+	EXPECT_EQ(DateEncoder::mktime(2020, 1, 1, 1, 15, 0),3600+3600);// one hour forward
 }
 
 } // namespace testing
