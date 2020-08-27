@@ -502,53 +502,8 @@ Spec *SPRegion::createSpec() {
           ParameterSpec::ReadWriteAccess)); // access
 
   /* ---- other parameters ----- */
-  ns->parameters.add(
-      "spInputNonZeros",
-      ParameterSpec("The indices of the non-zero inputs to the spatial pooler",
-          NTA_BasicType_SDR,            // type
-          0,                               // elementCount
-          "",                              // constraints
-          "",                              // defaultValue
-          ParameterSpec::ReadOnlyAccess)); // access
-
-  ns->parameters.add(
-      "spOutputNonZeros",
-      ParameterSpec(
-          "The indices of the non-zero outputs from the spatial pooler",
-          NTA_BasicType_SDR,            // type
-          0,                               // elementCount
-          "",                              // constraints
-          "",                              // defaultValue
-          ParameterSpec::ReadOnlyAccess)); // access
 
 
-  /* The last group is for parameters that aren't specific to spatial pooler */
-  ns->parameters.add("learningMode",
-      ParameterSpec("1 if the node is learning (default 1).",
-          NTA_BasicType_UInt32, // type
-          1,                    // elementCount
-          "bool",               // constraints
-          "1",                  // defaultValue
-          ParameterSpec::ReadWriteAccess)); // access
-
-
-  ns->parameters.add(
-      "activeOutputCount",
-      ParameterSpec("Number of active elements in bottomUpOut output.",
-          NTA_BasicType_UInt32,            // type
-          1,                               // elementCount
-          "",                              // constraints
-          "0",                             // defaultValue
-          ParameterSpec::ReadOnlyAccess)); // access
-
-
-  ns->parameters.add("spatialImp",
-      ParameterSpec("SpatialPooler type or option. not used.",
-          NTA_BasicType_Byte,              // type
-          0,                               // elementCount
-          "",                              // constraints
-          "",                              // defaultValue
-          ParameterSpec::ReadOnlyAccess)); // access
 
   /* ----- inputs ------- */
   ns->inputs.add(
@@ -751,7 +706,7 @@ bool SPRegion::getParameterBool(const std::string &name, Int64 index) const {
 // copy the contents of the requested array into the caller's array.
 // Allocate the buffer if one is not provided.  Convert data types if needed.
 void SPRegion::getParameterArray(const std::string &name, Int64 index, Array &array) const {
-  if (name == "spatialPoolerInput") {
+  /*if (name == "spatialPoolerInput") {
     array = getInput("bottomUpIn")->getData().copy();
   } else if (name == "spatialPoolerOutput") {
     array = getOutput("bottomUpOut")->getData().copy();
@@ -760,9 +715,9 @@ void SPRegion::getParameterArray(const std::string &name, Int64 index, Array &ar
   } else if (name == "spOutputNonZeros") {
     array = getOutput("bottomUpOut")->getData().copy();
   }
-  else {
+  else {*/
     this->RegionImpl::getParameterArray(name, index, array);
-  }
+  //}
 }
 
 size_t SPRegion::getParameterArrayCount(const std::string &name, Int64 index) const {
