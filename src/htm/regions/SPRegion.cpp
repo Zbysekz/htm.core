@@ -391,7 +391,7 @@ Spec *SPRegion::createSpec() {
       ParameterSpec("(float)\n"
                     "The default connected threshold.Any synapse whose "
                     "permanence value is "
-                    "above the connected threshold is a \"connected synapse\", "
+                    "above the connected threshold is a 'connected synapse', "
                     "meaning it can "
                     "contribute to the cell's firing. Default ``0.1``.",
                     NTA_BasicType_Real32,             // type
@@ -423,7 +423,7 @@ Spec *SPRegion::createSpec() {
           "when "
           "either its previously learned inputs are no longer ever active, or "
           "when "
-          "the vast majority of them have been \"hijacked\" by other "
+          "the vast majority of them have been 'hijacked' by other "
           "columns.Default "
           "``0.001``.",
           NTA_BasicType_Real32,             // type
