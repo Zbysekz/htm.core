@@ -157,6 +157,11 @@ def main(parameters=default_parameters, argv=None, verbose=True):
     net.run(1)
     anomaly.append(np.array(tmRegion.getOutputArray("anomaly"))[0])
 
+    from htm.bindings.sdr import SDR
+    s = SDR(len(np.array(scalarRegion.getOutputArray("encoded"))))
+    s.dense = np.array(scalarRegion.getOutputArray("encoded"))
+    print(s.sparse)
+
   try:
       import matplotlib.pyplot as plt
   except:
