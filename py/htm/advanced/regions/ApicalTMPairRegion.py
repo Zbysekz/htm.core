@@ -527,7 +527,5 @@ class ApicalTMPairRegion(PyRegion):
         """
         Binary dumps connections objects into file specified, adding suffix specifying the type
         """
-        with open(filepath+"_basal.dump", "wb") as f:
-            f.write(self._tm.basalConnections.save())
-        with open(filepath+"_apical.dump", "wb") as f:
-            f.write(self._tm.apicalConnections.save())
+        self._tm.basalConnections.saveToFile(filepath+"_basal.dump")
+        self._tm.apicalConnections.saveToFile(filepath + "_apical.dump")

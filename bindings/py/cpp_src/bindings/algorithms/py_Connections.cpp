@@ -180,6 +180,8 @@ R"(Returns pair of:
             buf << self;
             return buf.str(); });
 
+    py_Connections.def("saveToFile", &Connections::saveToFile);
+
     py_Connections.def(py::pickle(
         [](const Connections &self) {   // Save
             std::stringstream buf;

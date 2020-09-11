@@ -535,14 +535,11 @@ class ColumnPoolerRegion(PyRegion):
         """
         Binary dumps connections objects into file specified, adding suffix specifying the type
         """
-        with open(filepath+"_proximal.dump", "wb") as f:
-            f.write(self._pooler.proximalPermanences.save())
-        with open(filepath+"_distal.dump", "wb") as f:
-            f.write(self._pooler.internalDistalPermanences.save())
+        self._pooler.proximalPermanences.saveToFile(filepath+"_proximal.dump")
+        self._pooler.internalDistalPermanences.saveToFile(filepath + "_distal.dump")
 
         for i in range(len(self._pooler.distalPermanences)):
-            with open(filepath+"_distal_"+str(i)+".dump", "wb") as f:
-                f.write(self._pooler.distalPermanences[i].save())
+            self._pooler.distalPermanences[i].saveToFile(filepath+"_distal_"+str(i)+".dump", )
 
 
 
