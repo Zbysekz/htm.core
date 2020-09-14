@@ -186,7 +186,7 @@ class ColumnPooler(object):
         self.internalDistalPermanences = Connections(cellCount, connectedPermanenceDistal, False) #cellCount max synapses
         self.distalPermanences = [Connections(cellCount, connectedPermanenceDistal, False) for _ in lateralInputWidths] #lateralInputWidths max synapses
 
-        self.useInertia=True
+        self.useInertia=False
 
     def compute(self, 
                 feedforwardInput=(), 
