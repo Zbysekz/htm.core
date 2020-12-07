@@ -22,7 +22,7 @@
 import numpy as np
 from htm.bindings.regions.PyRegion import PyRegion
 
-from htm.advanced.algorithms.location_modules import ThresholdedGaussian2DLocationModule
+from htm.advanced.algorithms.GCM_1D import GCM_1D
 
 
 
@@ -369,31 +369,7 @@ class GridCellLocationRegion(PyRegion):
         if self._modules is None:
             self._modules = []
             for i in range(self.moduleCount):
-                self._modules.append(ThresholdedGaussian2DLocationModule(
-                    cellsPerAxis=self.cellsPerAxis,
-                    scale=self.scale[i],
-                    orientation=self.orientation[i],
-                    anchorInputSize=self.anchorInputSize,
-                    activeFiringRate=self.activeFiringRate,
-                    bumpSigma=self.bumpSigma,
-                    activationThreshold=self.activationThreshold,
-                    initialPermanence=self.initialPermanence,
-                    connectedPermanence=self.connectedPermanence,
-                    learningThreshold=self.learningThreshold,
-                    sampleSize=self.sampleSize,
-                    permanenceIncrement=self.permanenceIncrement,
-                    permanenceDecrement=self.permanenceDecrement,
-                    maxSynapsesPerSegment=self.maxSynapsesPerSegment,
-                    maxSegmentsPerCell=self.maxSegmentsPerCell,
-                    bumpOverlapMethod=self.bumpOverlapMethod,
-                    seed=self.seed))
-
-            # Create a projection matrix for each module used to convert higher
-            # dimension displacements to 2D
-            if self.dimensions > 2:
-                self._projection = [
-                    self.createProjectionMatrix(dimensions=self.dimensions)
-                        for _ in range(self.moduleCount)]
+                self._modules.append(GCM_1D(n=[3, 5, 8]))
 
 
     def compute(self, inputs, outputs):
