@@ -165,13 +165,6 @@ class GridCellLocationRegion(PyRegion):
                     accessMode="Create",
                     count=1,
                 ),
-                activeFiringRate=dict(
-                    description="Between 0.0 and 1.0. A cell is considered active if its "
-                                "firing rate is at least this value",
-                    dataType="Real32",
-                    accessMode="Create",
-                    count=1,
-                ),
                 bumpSigma=dict(
                     description="Specifies the diameter of a gaussian bump, in units of "
                                 "'rhombus edges'. A single edge of the rhombus has length "
@@ -306,7 +299,6 @@ class GridCellLocationRegion(PyRegion):
                  scale,
                  orientation,
                  anchorInputSize,
-                 activeFiringRate,
                  bumpSigma,
                  activationThreshold=10,
                  initialPermanence=0.21,
@@ -336,7 +328,6 @@ class GridCellLocationRegion(PyRegion):
         self.scale = list(scale)
         self.orientation = list(orientation)
         self.anchorInputSize = anchorInputSize
-        self.activeFiringRate = activeFiringRate
         self.bumpSigma = bumpSigma
         self.activationThreshold = activationThreshold
         self.initialPermanence = initialPermanence
@@ -369,7 +360,7 @@ class GridCellLocationRegion(PyRegion):
         if self._modules is None:
             self._modules = []
             for i in range(self.moduleCount):
-                self._modules.append(GCM_1D(n=[3, 5, 8]))
+                self._modules.append(GCM_1D(n=[3, 5, 8], anchorInputSize=self.anchorInputSize))
 
 
     def compute(self, inputs, outputs):
@@ -427,9 +418,6 @@ class GridCellLocationRegion(PyRegion):
             # Compute movement
             if shouldMove:
                 movement = displacement
-                if self.dimensions > 2:
-                    # Project n-dimension displacements to 2D
-                    movement = np.matmul(self._projection[i], movement)
 
                 module.movementCompute(movement)
 
@@ -486,40 +474,3 @@ class GridCellLocationRegion(PyRegion):
         Returns underlying list of modules used by this region
         """
         return self._modules
-
-    def createProjectionMatrix(self, dimensions=3):
-        """
-        Compute    projection matrix used to convert n-dimensional displacement into
-        2D displacement compatible with :class:`ThresholdedGaussian2DLocationModule`
-        algorithm. To compute the 2D displacement each module must multiply the
-        n-dimensional displacement with the projection matrix for that module.
-
-        :param dimensions: Number of dimensions. Must be greater than 2. Default 3.
-        :type int dimensions:
-
-        :return: The projection matrix
-        :rtype: array(2, n)
-        """
-        if dimensions < 3:
-            raise ValueError("dimensions value must be 3 or higher")
-
-        b1 = np.random.multivariate_normal(mean=np.zeros(dimensions), cov=np.eye(dimensions))
-        b1 /= np.linalg.norm(b1)
-
-        # Choose a random vector orthogonal to b1
-        while True:
-            randomVector = np.random.multivariate_normal(mean=np.zeros(dimensions), cov=np.eye(dimensions))
-            randomVector /= np.linalg.norm(randomVector)
-            projectedToPlane = randomVector - np.dot(randomVector, b1) * b1
-
-            # make sure random vector is not parallel to b1 plane
-            length = np.linalg.norm(projectedToPlane)
-            if length == 0:
-                continue
-
-            b2 = projectedToPlane / length
-
-            # b1 and b2 are two orthogonal vectors on the plane.
-            # To get a 2D displacement, you'll dot the n-dimensional displacement with
-            # each of these vectors.
-            return np.array([b1, b2])
