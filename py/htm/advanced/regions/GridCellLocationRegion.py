@@ -324,7 +324,7 @@ class GridCellLocationRegion(PyRegion):
 
         self.moduleCount = moduleCount
         self.cellsPerAxis = cellsPerAxis
-        self.cellCount = cellsPerAxis * cellsPerAxis
+        self.cellCount = sum([3,5,8])
         self.scale = list(scale)
         self.orientation = list(orientation)
         self.anchorInputSize = anchorInputSize
@@ -360,7 +360,7 @@ class GridCellLocationRegion(PyRegion):
         if self._modules is None:
             self._modules = []
             for i in range(self.moduleCount):
-                self._modules.append(GCM_1D(n=[3, 5, 8], anchorInputSize=self.anchorInputSize))
+                self._modules.append(GCM_1D(n=[3,5,8], anchorInputSize=self.anchorInputSize))
 
 
     def compute(self, inputs, outputs):
@@ -417,7 +417,7 @@ class GridCellLocationRegion(PyRegion):
 
             # Compute movement
             if shouldMove:
-                movement = displacement
+                movement = displacement[0] # note just ad-hoc test
 
                 module.movementCompute(movement)
 

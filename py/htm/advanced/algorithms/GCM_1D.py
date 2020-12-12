@@ -17,7 +17,7 @@ class SUBGCM:
             for i in range(n):
                 self.ShiftRight()
         else:
-            for i in range(n):
+            for i in range(abs(n)):
                 self.ShiftLeft()
 
     def ShiftRight(self):
@@ -28,7 +28,7 @@ class SUBGCM:
 
     def ShiftLeft(self):
         tmp = self.cells[0]
-        for i in reversed(range(len(self.cells)-1)):
+        for i in range(len(self.cells)-1):
             self.cells[i] = self.cells[i + 1]
         self.cells[-1] = tmp
 
@@ -72,6 +72,24 @@ class GCM_1D:
         self.seed = seed
 
         self.dimensionSize = np.lcm.reduce(n) # minimal common multiple
+
+        self.connections = Connections(self.cellCount, connectedPermanence, False)
+
+        # The cells that were activated by sensory input in an inference timestep,
+        # or cells that were associated with sensory input in a learning timestep.
+        self.sensoryAssociatedCells = np.empty(0, dtype="int")
+
+        self.activeSegments = np.empty(0, dtype="uint32")
+
+        self.initialPermanence = initialPermanence
+        self.connectedPermanence = connectedPermanence
+        self.learningThreshold = learningThreshold
+        self.sampleSize = sampleSize
+        self.permanenceIncrement = permanenceIncrement
+        self.permanenceDecrement = permanenceDecrement
+        self.activationThreshold = activationThreshold
+        self.maxSynapsesPerSegment = maxSynapsesPerSegment
+        self.maxSegmentsPerCell = maxSegmentsPerCell
 
         self.rng = Random(seed)
 
@@ -255,7 +273,10 @@ class GCM_1D:
 
     def getActiveCells(self):
         # for now, dummy like this
-        simpleList = [x.cells for x in self.SUBGCMS]
+        simpleList = []
+        for x in self.SUBGCMS:
+            simpleList+= x.cells
+
         activeIndexes = [i for i, value in enumerate(simpleList) if value]
         self.activeCells = np.empty(0, dtype="int")
         self.activeCells = np.append(self.activeCells, activeIndexes)
