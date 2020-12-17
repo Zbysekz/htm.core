@@ -284,7 +284,8 @@ class GCM_1D:
         return self.activeCells
 
     def getLearnableCells(self):
-        return np.empty(0, dtype="int")
+        # note in Gaussian 2D module, it was np.where(cellExcitations == cellExcitations.max())[0]
+        return self.getActiveCells()
 
     def getSensoryAssociatedCells(self):
         return self.sensoryAssociatedCells
