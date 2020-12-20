@@ -21,7 +21,7 @@
 
 import numpy as np
 from htm.bindings.regions.PyRegion import PyRegion
-
+from htm.bindings.math import Random
 from htm.advanced.algorithms.GCM_1D import GCM_1D
 
 
@@ -134,12 +134,12 @@ class GridCellLocationRegion(PyRegion):
                     accessMode="Create",
                     count=1
                 ),
-                cellsPerAxis=dict(
+                GCM_sizes=dict(
                     description="Determines the number of cells. Determines how space is "
                                 "divided between the cells",
                     dataType="UInt32",
                     accessMode="Create",
-                    count=1
+                    count=0
                 ),
                 scale=dict(
                     description="Determines the amount of world space covered by all of "
@@ -295,7 +295,7 @@ class GridCellLocationRegion(PyRegion):
 
     def __init__(self,
                  moduleCount,
-                 cellsPerAxis,
+                 GCM_sizes,
                  scale,
                  orientation,
                  anchorInputSize,
@@ -315,7 +315,7 @@ class GridCellLocationRegion(PyRegion):
                  dualPhase=True,
                  dimensions=2,
                  **kwargs):
-        if moduleCount <= 0 or cellsPerAxis <= 0:
+        if moduleCount <= 0:
             raise TypeError("Parameters moduleCount and cellsPerAxis must be > 0")
         if moduleCount != len(scale) or moduleCount != len(orientation):
             raise TypeError("scale and orientation arrays len must match moduleCount")
@@ -323,8 +323,8 @@ class GridCellLocationRegion(PyRegion):
             raise TypeError("dimensions must be >= 2")
 
         self.moduleCount = moduleCount
-        self.cellsPerAxis = cellsPerAxis
-        self.cellCount = sum([3,5,8])
+        self.GCM_sizes = GCM_sizes
+        self.cellCount = sum(self.GCM_sizes)
         self.scale = list(scale)
         self.orientation = list(orientation)
         self.anchorInputSize = anchorInputSize
@@ -344,6 +344,9 @@ class GridCellLocationRegion(PyRegion):
         self.dimensions = dimensions
         self.seed = seed
 
+        self.rng = Random(seed)
+        self.baseVector = np.array([self.rng.getReal64(1.0), self.rng.getReal64(1.0)])
+
         # This flag controls whether the region is processing sensation or movement
         # on dual phase configuration
         self._sensing = False
@@ -360,7 +363,7 @@ class GridCellLocationRegion(PyRegion):
         if self._modules is None:
             self._modules = []
             for i in range(self.moduleCount):
-                self._modules.append(GCM_1D(n=[3,5,8], anchorInputSize=self.anchorInputSize))
+                self._modules.append(GCM_1D(n=self.GCM_sizes, anchorInputSize=self.anchorInputSize))
 
 
     def compute(self, inputs, outputs):
@@ -417,7 +420,7 @@ class GridCellLocationRegion(PyRegion):
 
             # Compute movement
             if shouldMove:
-                movement = displacement[0] # note just ad-hoc test
+                movement = displacement @ self.baseVector # note just ad-hoc test
 
                 module.movementCompute(movement)
 
