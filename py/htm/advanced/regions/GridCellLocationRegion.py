@@ -345,7 +345,7 @@ class GridCellLocationRegion(PyRegion):
         self.seed = seed
 
         self.rng = Random(seed)
-        self.baseVector = np.array([self.rng.getReal64(1.0), self.rng.getReal64(1.0)])
+        self.baseVector = np.array([self.rng.getReal64(), self.rng.getReal64()])
 
         # This flag controls whether the region is processing sensation or movement
         # on dual phase configuration
@@ -363,7 +363,7 @@ class GridCellLocationRegion(PyRegion):
         if self._modules is None:
             self._modules = []
             for i in range(self.moduleCount):
-                self._modules.append(GCM_1D(n=self.GCM_sizes, anchorInputSize=self.anchorInputSize))
+                self._modules.append(GCM_1D(n=self.GCM_sizes, anchorInputSize=self.anchorInputSize, scale = self.scale[i], sampleSize = self.sampleSize))
 
 
     def compute(self, inputs, outputs):

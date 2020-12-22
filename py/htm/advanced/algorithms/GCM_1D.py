@@ -9,7 +9,7 @@ from htm.bindings.sdr import SDR
 
 class SUBGCM:
     def __init__(self, size):
-        self.cells = [0]*size
+        self.cells = np.zeros(size)
         self.size = size
 
     def Shift(self, n):
@@ -139,7 +139,7 @@ class GCM_1D:
         """
         for gcm in self.SUBGCMS:
             r = self.rng.getUInt32(gcm.size)
-            gcm.cells = [0] * gcm.size
+            gcm.cells = np.zeros(gcm.size)
             gcm.cells[r] = 1
 
     def reset(self):
@@ -159,8 +159,16 @@ class GCM_1D:
         A translation vector.
         """
         self.displacementRemainder += displacement * self.scale
-        self.Shift(math.floor(self.displacementRemainder))
-        self.displacementRemainder -= math.floor(self.displacementRemainder)
+
+        if self.displacementRemainder > 0:
+            integerValue = math.floor(self.displacementRemainder)
+            self.displacementRemainder -= integerValue
+        else:
+            integerValue = math.ceil(self.displacementRemainder)
+            self.displacementRemainder -= integerValue
+
+        self.Shift(integerValue)
+
 
 
     def _sensoryComputeInferenceMode(self, anchorInput):
@@ -168,11 +176,30 @@ class GCM_1D:
         Infer the location from sensory input. Activate any cells with enough active
         synapses to this sensory input. Deactivate all other cells.
 
-        @param anchorInput (numpy array)
+        @param anchorInput SDR
         A sensory input. This will often come from a feature-location pair layer.
         """
+
         if len(anchorInput.sparse) == 0:
             return
+
+        activeSegments = self.connections.computeActiveSegments(anchorInput, self.activationThreshold)
+
+        sensorySupportedCells = np.unique(self.connections.mapSegmentsToCells(activeSegments))
+
+        offset = 0
+        for i in range(len(self.SUBGCMS)):# go through submodules and divide bits to them appropriately
+            indexes = np.where((self.SUBGCMS[i].size+offset > sensorySupportedCells) & (sensorySupportedCells >= offset))[0]
+
+            self.SUBGCMS[i].cells = np.zeros(self.SUBGCMS[i].size)
+            self.SUBGCMS[i].cells[sensorySupportedCells[indexes] - offset] = 1
+
+            offset += self.SUBGCMS[i].size
+
+
+        self.activeSegments = activeSegments
+        self.sensoryAssociatedCells = sensorySupportedCells
+
 
     def _sensoryComputeLearningMode(self, anchorInput):
         """
@@ -272,14 +299,14 @@ class GCM_1D:
                                           numNewSynapses)
 
     def getActiveCells(self):
-        # for now, dummy like this
-        simpleList = []
-        for x in self.SUBGCMS:
-            simpleList+= x.cells
-
-        activeIndexes = [i for i, value in enumerate(simpleList) if value]
+        # concatenate all subgcms
         self.activeCells = np.empty(0, dtype="int")
-        self.activeCells = np.append(self.activeCells, activeIndexes)
+
+        offset = 0
+        for i in range(len(self.SUBGCMS)):
+            indexes = np.where(self.SUBGCMS[i].cells != 0)[0]
+            self.activeCells = np.append(self.activeCells, indexes + offset)
+            offset += len(self.SUBGCMS[i].cells)
 
         return self.activeCells
 
