@@ -12,6 +12,9 @@ class SUBGCM:
         self.cells = np.zeros(size)
         self.size = size
 
+    def Reset(self):
+        self.cells = np.zeros(self.size)
+
     def Shift(self, n):
         if n > 0:
             for i in range(n):
@@ -149,6 +152,10 @@ class GCM_1D:
         self.activeCells = np.empty(0, dtype="int")
         self.sensoryAssociatedCells = np.empty(0, dtype="int")
 
+        for g in self.SUBGCMS:
+            g.Reset()
+
+        self.displacementRemainder = 0.0
 
     def movementCompute(self, displacement, noiseFactor=0):
         """
@@ -196,7 +203,7 @@ class GCM_1D:
 
             offset += self.SUBGCMS[i].size
 
-
+        self.displacementRemainder = 0.0
         self.activeSegments = activeSegments
         self.sensoryAssociatedCells = sensorySupportedCells
 

@@ -363,8 +363,20 @@ class GridCellLocationRegion(PyRegion):
         if self._modules is None:
             self._modules = []
             for i in range(self.moduleCount):
-                self._modules.append(GCM_1D(n=self.GCM_sizes, anchorInputSize=self.anchorInputSize, scale = self.scale[i], sampleSize = self.sampleSize))
 
+                m = GCM_1D(anchorInputSize=self.anchorInputSize,
+                           activationThreshold=self.activationThreshold,
+                           initialPermanence=self.initialPermanence,
+                           connectedPermanence=self.connectedPermanence,
+                           learningThreshold=self.learningThreshold,
+                           sampleSize=self.sampleSize,
+                           permanenceIncrement=self.permanenceIncrement,
+                           permanenceDecrement=self.permanenceDecrement,
+                           maxSynapsesPerSegment=self.maxSynapsesPerSegment,
+                           maxSegmentsPerCell=self.maxSegmentsPerCell,
+                           seed=self.seed, n=self.GCM_sizes, scale=self.scale[i])
+
+                self._modules.append(m)
 
     def compute(self, inputs, outputs):
         """
@@ -477,3 +489,13 @@ class GridCellLocationRegion(PyRegion):
         Returns underlying list of modules used by this region
         """
         return self._modules
+
+    def saveConnectionsToFile(self, filepath):
+        """
+        Binary dumps connections objects into file specified, adding suffix specifying the type
+        """
+        i = 0
+        for m in self._modules:
+            with open(filepath+"_"+str(i)+".dump", "wb") as f:
+                f.write(m.connections.save())
+            i+=1
